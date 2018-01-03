@@ -10,6 +10,7 @@ from lp_utils import (
 from my_planning_graph import PlanningGraph
 
 from functools import lru_cache
+import itertools
 
 
 class AirCargoProblem(Problem):
@@ -29,7 +30,7 @@ class AirCargoProblem(Problem):
         """
         self.state_map = initial.pos + initial.neg
         self.initial_state_TF = encode_state(initial, self.state_map)
-        print('map is ', self.initial_state_TF)
+        # print('map is ', self.initial_state_TF)
         Problem.__init__(self, self.initial_state_TF, goal=goal)
         self.cargos = cargos
         self.planes = planes
@@ -74,7 +75,7 @@ class AirCargoProblem(Problem):
                             # expr("In({}, {})".format(cargo, airport)),
                         ]
                         effect_add = [
-                            expr("In({}, {})".format(cargo, airport))]
+                            expr("In({}, {})".format(cargo, plane))]
                         effect_rem = [
                             expr("At({}, {})".format(cargo, airport)),
                         ]
@@ -106,7 +107,7 @@ class AirCargoProblem(Problem):
                             expr("At({}, {})".format(cargo, airport)),
                         ]
                         effect_rem = [
-                            # expr("In({}, {})".format(cargo, plane)),
+                            expr("In({}, {})".format(cargo, plane)),
                         ]
                         unload = Action(expr("Unload({}, {}, {})".format(cargo, plane, airport)),
                                         [precond_pos, precond_neg],
@@ -135,6 +136,7 @@ class AirCargoProblem(Problem):
                             flys.append(fly)
             return flys
 
+        # concat all actions
         return load_actions() + unload_actions() + fly_actions()
 
     def actions(self, state: str) -> list:
@@ -148,13 +150,13 @@ class AirCargoProblem(Problem):
         # TODO implement
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
-        print('in actions: state is ', state)
-        print('clauses ', kb.clauses)
+        # print('in actions: state is ', state)
+        # print('clauses ', kb.clauses)
         # go through all actions list
         # and find if the kb.clauses is subset of precond_pos
         possible_actions = []
         set_actual_actions = set(kb.clauses)
-        print(set_actual_actions)
+        # print(set_actual_actions)
         for action in self.actions_list:
             is_possible = True
             for clause in action.precond_pos:
@@ -166,17 +168,6 @@ class AirCargoProblem(Problem):
             if is_possible:
                 possible_actions.append(action)
         return possible_actions
-    '''
-        for action in self.actions_list:
-            set_precond_pos = set(action.precond_pos)
-            set_precond_neg = set(action.precond_neg)
-            if set_precond_neg.isdisjoint(set_actual_actions):
-                print(set_precond_pos)
-                if not (set_actual_actions - set_precond_pos):
-                    print('adding actions ', action)
-                    possible_actions.append(action)
-        return possible_actions
-        '''
 
     def result(self, state: str, action: Action):
         """ Return the state that results from executing the given
@@ -240,11 +231,12 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         """
-        # implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
+        # count goals
         count = 0
         kb = PropKB()
         kb.tell(decode_state(node.state, self.state_map).pos_sentence())
-        print('self.goal ', self.goal)
+        print('goals are:  ', self.goal)
+        print('clauses are: ', kb.clauses)
         for clause in self.goal:
             if clause not in kb.clauses:
                 count += 1

@@ -17,16 +17,17 @@ class TestPlanningGraphLevels(unittest.TestCase):
         self.pg = PlanningGraph(self.p, self.p.initial)
 
     def test_add_action_level(self):
-        # for level, nodeset in enumerate(self.pg.a_levels):
-        #     for node in nodeset:
-        #         print("Level {}: {}{})".format(level, node.action.name, node.action.args))
+        for level, nodeset in enumerate(self.pg.a_levels):
+            for node in nodeset:
+                print("Level {}: {}{})".format(
+                    level, node.action.name, node.action.args))
         self.assertEqual(len(self.pg.a_levels[0]), 3, len(self.pg.a_levels[0]))
         self.assertEqual(len(self.pg.a_levels[1]), 6, len(self.pg.a_levels[1]))
 
     def test_add_literal_level(self):
-        # for level, nodeset in enumerate(self.pg.s_levels):
-        #     for node in nodeset:
-        #         print("Level {}: {})".format(level, node.literal))
+        for level, nodeset in enumerate(self.pg.s_levels):
+            for node in nodeset:
+                print("Level {}: {})".format(level, node.literal))
         self.assertEqual(len(self.pg.s_levels[0]), 2, len(self.pg.s_levels[0]))
         self.assertEqual(len(self.pg.s_levels[1]), 4, len(self.pg.s_levels[1]))
         self.assertEqual(len(self.pg.s_levels[2]), 4, len(self.pg.s_levels[2]))
@@ -61,7 +62,8 @@ class TestPlanningGraphMutex(unittest.TestCase):
     def test_serialize_mutex(self):
         self.assertTrue(PlanningGraph.serialize_actions(self.pg, self.na1, self.na2),
                         "Two persistence action nodes not marked as mutex")
-        self.assertFalse(PlanningGraph.serialize_actions(self.pg, self.na3, self.na4), "Two No-Ops were marked mutex")
+        self.assertFalse(PlanningGraph.serialize_actions(
+            self.pg, self.na3, self.na4), "Two No-Ops were marked mutex")
         self.assertFalse(PlanningGraph.serialize_actions(self.pg, self.na1, self.na3),
                          "No-op and persistence action incorrectly marked as mutex")
 
