@@ -72,7 +72,7 @@ class AirCargoProblem(Problem):
                             expr("At({}, {})".format(plane, airport)),
                         ]
                         precond_neg = [
-                            # expr("In({}, {})".format(cargo, airport)),
+                            # expr("In({}, {})".format(cargo, plane)),
                         ]
                         effect_add = [
                             expr("In({}, {})".format(cargo, plane))]
@@ -101,7 +101,7 @@ class AirCargoProblem(Problem):
                             expr("At({}, {})".format(plane, airport)),
                         ]
                         precond_neg = [
-                            expr("At({}, {})".format(cargo, airport)),
+                            # expr("At({}, {})".format(cargo, airport)),
                         ]
                         effect_add = [
                             expr("At({}, {})".format(cargo, airport)),
